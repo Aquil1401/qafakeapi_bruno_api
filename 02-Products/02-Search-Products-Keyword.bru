@@ -1,0 +1,22 @@
+meta {
+  name: 02 - Search Products by Keyword
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/products?q=Mouse
+  body: none
+  auth: none
+}
+
+params:query {
+  q: Mouse
+}
+
+assert {
+  res.status: eq 200
+  res.body.products: isDefined
+  res.body.products.length: gte 1
+  res.body.products[0].name: contains Mouse
+}

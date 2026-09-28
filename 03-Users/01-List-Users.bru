@@ -1,0 +1,19 @@
+meta {
+  name: 01 - Get All Registered Users
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/users
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.length: gte 1
+  res.body[0].id: isDefined
+  res.body[0].username: isDefined
+  res.body[0].email: isDefined
+}

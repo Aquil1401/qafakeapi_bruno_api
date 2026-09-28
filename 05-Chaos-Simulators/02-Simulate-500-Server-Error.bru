@@ -1,0 +1,18 @@
+meta {
+  name: 02 - Simulate 500 Internal Server Error
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/mock/status/500
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 500
+  res.body.statusCode: eq 500
+  res.body.simulated: eq true
+  res.body.message: contains Internal Server Error
+}

@@ -1,0 +1,34 @@
+{
+  "name": "qafakeapi-bruno-api",
+  "version": "1.0.0",
+  "description": "Production-grade API Automation and Test Framework for QAFakeAPI using Bruno CLI",
+  "main": "index.js",
+  "scripts": {
+    "test": "bru run --env Production",
+    "test:local": "bru run --env Local",
+    "test:report": "node -e \"fs.mkdirSync('reports',{recursive:true})\" && bru run --env Production --reporter-html reports/report.html --reporter-junit reports/results.xml",
+    "test:auth": "bru run 01-Authentication --env Production",
+    "test:products": "bru run 02-Products --env Production",
+    "test:users": "bru run 03-Users --env Production",
+    "test:orders": "bru run 04-Orders --env Production",
+    "test:chaos": "bru run 05-Chaos-Simulators --env Production",
+    "test:system": "bru run 06-System --env Production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aquil1401/qafakeapi_bruno_api.git"
+  },
+  "keywords": [
+    "bruno",
+    "api-testing",
+    "automation",
+    "qafakeapi",
+    "ci-cd",
+    "sdet"
+  ],
+  "author": "Aquil Khan",
+  "license": "ISC",
+  "devDependencies": {
+    "@usebruno/cli": "^4.2.0"
+  }
+}

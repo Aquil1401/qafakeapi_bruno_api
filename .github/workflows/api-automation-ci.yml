@@ -1,0 +1,64 @@
+name: QAFakeAPI Bruno Automation CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Run synthetic API health & regression check every day at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'Production'
+        type: choice
+        options:
+          - Production
+          - Local
+
+jobs:
+  api-tests:
+    name: Execute Bruno API Test Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Check out repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: npm install
+
+      - name: 📂 Create Reports Directory
+        run: mkdir -p reports
+
+      - name: 🚀 Run Bruno API Test Automation
+        run: |
+          ENV_NAME="${{ github.event.inputs.environment || 'Production' }}"
+          echo "Executing test suite against environment: $ENV_NAME"
+          npx bru run --env "$ENV_NAME" --reporter-html reports/report.html --reporter-junit reports/results.xml
+
+      - name: 📊 Upload Test Reports Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bruno-api-test-reports
+          path: reports/
+          retention-days: 30
+
+      - name: 📝 Publish Step Summary
+        if: always()
+        run: |
+          echo "## 🧪 QAFakeAPI Automation Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "Target Environment: \`${{ github.event.inputs.environment || 'Production' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status:** Completed" >> $GITHUB_STEP_SUMMARY
+          echo "- **HTML Report:** Generated at \`reports/report.html\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **JUnit XML:** Generated at \`reports/results.xml\`" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,18 @@
+meta {
+  name: 04 - Simulate Network Delay (1.5s Latency)
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/mock/delay/1500
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.requestedDelayMs: eq 1500
+  res.body.actualDelayMs: gte 1400
+  res.responseTime: gte 1400
+}

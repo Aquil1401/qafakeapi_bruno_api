@@ -1,0 +1,23 @@
+meta {
+  name: 03 - Get Current User Profile (Protected)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/auth/me
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: eq 1
+  res.body.username: eq aquil
+  res.body.role: eq admin
+  res.body.email: eq aquil@qafakeapi.dev
+}

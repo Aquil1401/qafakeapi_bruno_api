@@ -1,0 +1,30 @@
+meta {
+  name: 06 - Update Existing Product
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/v1/products/{{createdProductId}}
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "price": 1999,
+    "stock": 45
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isDefined
+  res.body.price: eq 1999
+  res.body.stock: eq 45
+}

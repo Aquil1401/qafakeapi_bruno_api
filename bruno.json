@@ -1,0 +1,10 @@
+{
+  "version": "1",
+  "name": "QAFakeAPI Automation Suite",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git",
+    "reports"
+  ]
+}

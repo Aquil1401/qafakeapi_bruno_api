@@ -1,0 +1,24 @@
+meta {
+  name: 01 - Get All Products (Catalog & Pagination)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/products?page=1&limit=10
+  body: none
+  auth: none
+}
+
+params:query {
+  page: 1
+  limit: 10
+}
+
+assert {
+  res.status: eq 200
+  res.body.products: isDefined
+  res.body.pagination: isDefined
+  res.body.pagination.total: gte 1
+  res.body.pagination.page: eq 1
+}

@@ -1,0 +1,20 @@
+meta {
+  name: 07 - Delete Product by ID
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/products/{{createdProductId}}
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.message: eq Product deleted
+}

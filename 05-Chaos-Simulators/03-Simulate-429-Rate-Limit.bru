@@ -1,0 +1,18 @@
+meta {
+  name: 03 - Simulate 429 Rate Limit
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/mock/status/429
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 429
+  res.body.statusCode: eq 429
+  res.body.simulated: eq true
+  res.body.message: contains Rate limit exceeded
+}

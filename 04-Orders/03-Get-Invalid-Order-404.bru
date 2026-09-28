@@ -1,0 +1,15 @@
+meta {
+  name: 03 - Find Non-Existent Order (404 Negative Test)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/orders/999999
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

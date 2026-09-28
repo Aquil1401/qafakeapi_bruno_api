@@ -1,0 +1,19 @@
+meta {
+  name: 01 - System Health Check & Statistics
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/v1/meta/health
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.status: eq online
+  res.body.service: eq QAFakeAPI
+  res.body.stats: isDefined
+  res.body.stats.systemStatus: eq healthy
+}

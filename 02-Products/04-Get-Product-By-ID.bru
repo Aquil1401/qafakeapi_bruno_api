@@ -1,0 +1,20 @@
+meta {
+  name: 04 - Get Single Product by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/v1/products/1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: eq 1
+  res.body.name: isDefined
+  res.body.price: isDefined
+  res.body.price: gt 0
+  res.body.stock: isDefined
+}

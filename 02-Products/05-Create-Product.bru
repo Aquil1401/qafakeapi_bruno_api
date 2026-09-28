@@ -1,0 +1,40 @@
+meta {
+  name: 05 - Add New Product (Auth Required)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/v1/products
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{authToken}}
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Wireless Ergonomic Keyboard",
+    "price": 1899,
+    "stock": 35,
+    "category": "electronics"
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.id: isDefined
+  res.body.name: eq Wireless Ergonomic Keyboard
+  res.body.price: eq 1899
+}
+
+script:post-response {
+  const data = res.getBody();
+  if (data && data.id) {
+    bru.setEnvVar("createdProductId", data.id);
+    console.log("Saved dynamic createdProductId:", data.id);
+  }
+}

@@ -1,0 +1,22 @@
+meta {
+  name: 03 - Filter Products by Category
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/v1/products?category=electronics
+  body: none
+  auth: none
+}
+
+params:query {
+  category: electronics
+}
+
+assert {
+  res.status: eq 200
+  res.body.products: isDefined
+  res.body.products.length: gte 1
+  res.body.products[0].category: eq electronics
+}
