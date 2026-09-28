@@ -20,3 +20,26 @@ assert {
   res.body.products.length: gte 1
   res.body.products[0].name: contains Mouse
 }
+
+script:pre-request {
+  console.log("--> [PRODUCTS SEARCH] Querying items matching keyword: 'Mouse'...");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify search results contain queried keyword", function() {
+    const products = res.getBody().products;
+    expect(products).to.be.an('array').that.is.not.empty;
+    products.forEach(p => {
+      const match = p.name.toLowerCase().includes('mouse') || p.description.toLowerCase().includes('mouse');
+      expect(match).to.be.true;
+    });
+  });
+}

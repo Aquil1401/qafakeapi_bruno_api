@@ -17,3 +17,34 @@ assert {
   res.body.stats: isDefined
   res.body.stats.systemStatus: eq healthy
 }
+
+script:pre-request {
+  console.log("--> [SYSTEM HEALTH] Querying live health check, system uptime, and counters...");
+}
+
+script:post-response {
+  const stats = res.getBody().stats;
+  console.log("<-- [SYSTEM HEALTH] System Status:", stats?.systemStatus, "| Products:", stats?.productsCount, "| Users:", stats?.usersCount);
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify health service info and live counters", function() {
+    const data = res.getBody();
+    expect(data.status).to.equal('online');
+    expect(data.service).to.equal('QAFakeAPI');
+    expect(data.uptimeSeconds).to.be.a('number').at.least(0);
+    expect(data.stats).to.be.an('object');
+    expect(data.stats.systemStatus).to.equal('healthy');
+    expect(data.stats.productsCount).to.be.a('number');
+    expect(data.stats.usersCount).to.be.a('number');
+    expect(data.stats.ordersCount).to.be.a('number');
+  });
+}

@@ -14,3 +14,29 @@ assert {
   res.status: eq 200
   res.body.message: isDefined
 }
+
+script:pre-request {
+  console.log("--> [SETUP] Initializing database seed reset before test run...");
+}
+
+script:post-response {
+  console.log("<-- [SETUP] Database successfully reset to baseline seed state.");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify response body confirms data reset", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.status).to.equal('success');
+    expect(data.message).to.include('Data reset');
+    expect(data.timestamp).to.be.a('string');
+  });
+}

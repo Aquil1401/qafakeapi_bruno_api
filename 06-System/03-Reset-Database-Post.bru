@@ -14,3 +14,27 @@ assert {
   res.status: eq 200
   res.body.status: eq success
 }
+
+script:pre-request {
+  console.log("--> [TEARDOWN] Triggering post-suite database cleanup reset...");
+}
+
+script:post-response {
+  console.log("<-- [TEARDOWN] Database reset completed. Suite execution finished cleanly.");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify database cleanup was confirmed by server", function() {
+    const data = res.getBody();
+    expect(data.status).to.equal('success');
+    expect(data.message).to.include('Data reset');
+  });
+}

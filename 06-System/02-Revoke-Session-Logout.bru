@@ -18,3 +18,27 @@ assert {
   res.status: eq 200
   res.body.message: eq Logged out successfully
 }
+
+script:pre-request {
+  console.log("--> [AUTH LOGOUT] Revoking active JWT bearer session on server...");
+}
+
+script:post-response {
+  console.log("<-- [AUTH LOGOUT] Session revoked successfully.");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify logout confirmation payload", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.message).to.equal('Logged out successfully');
+  });
+}

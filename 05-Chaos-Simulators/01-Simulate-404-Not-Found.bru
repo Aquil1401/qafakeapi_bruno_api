@@ -16,3 +16,25 @@ assert {
   res.body.simulated: eq true
   res.body.message: contains Not Found
 }
+
+script:pre-request {
+  console.log("--> [CHAOS] Simulating 404 Not Found error...");
+}
+
+tests {
+  test("Verify HTTP status is 404 Not Found", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify chaos simulator payload contract", function() {
+    const data = res.getBody();
+    expect(data.statusCode).to.equal(404);
+    expect(data.simulated).to.be.true;
+    expect(data.message).to.include('Not Found');
+    expect(data.timestamp).to.be.a('string');
+  });
+}

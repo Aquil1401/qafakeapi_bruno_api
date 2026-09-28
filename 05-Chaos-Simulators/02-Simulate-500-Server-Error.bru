@@ -16,3 +16,24 @@ assert {
   res.body.simulated: eq true
   res.body.message: contains Internal Server Error
 }
+
+script:pre-request {
+  console.log("--> [CHAOS] Simulating 500 Internal Server Error...");
+}
+
+tests {
+  test("Verify HTTP status is 500 Internal Server Error", function() {
+    expect(res.getStatus()).to.equal(500);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify 500 chaos response structure", function() {
+    const data = res.getBody();
+    expect(data.statusCode).to.equal(500);
+    expect(data.simulated).to.be.true;
+    expect(data.message).to.include('Internal Server Error');
+  });
+}

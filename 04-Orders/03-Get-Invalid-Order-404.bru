@@ -13,3 +13,17 @@ get {
 assert {
   res.status: eq 404
 }
+
+script:pre-request {
+  console.log("--> [ORDERS NEGATIVE] Querying non-existent order ID: 999999...");
+}
+
+tests {
+  test("Verify HTTP status is 404 Not Found", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+}

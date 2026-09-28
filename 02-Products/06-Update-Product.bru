@@ -28,3 +28,29 @@ assert {
   res.body.price: eq 1999
   res.body.stock: eq 45
 }
+
+script:pre-request {
+  const prodId = bru.getEnvVar("createdProductId");
+  console.log("--> [PRODUCTS CRUD] Updating product ID:", prodId);
+}
+
+script:post-response {
+  console.log("<-- [PRODUCTS CRUD] Successfully updated product price & stock.");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify updated product values", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.price).to.equal(1999);
+    expect(data.stock).to.equal(45);
+  });
+}

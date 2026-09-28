@@ -18,3 +18,28 @@ assert {
   res.body.price: gt 0
   res.body.stock: isDefined
 }
+
+script:pre-request {
+  console.log("--> [PRODUCTS] Fetching single product details for ID: 1...");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify single product contract and data types", function() {
+    const p = res.getBody();
+    expect(p).to.be.an('object');
+    expect(p.id).to.equal(1);
+    expect(p.name).to.be.a('string').and.not.empty;
+    expect(p.price).to.be.a('number').above(0);
+    expect(p.stock).to.be.a('number').at.least(0);
+    expect(p.rating).to.be.an('object');
+    expect(p.rating.rate).to.be.a('number');
+  });
+}

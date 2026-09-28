@@ -22,3 +22,44 @@ assert {
   res.body.pagination.total: gte 1
   res.body.pagination.page: eq 1
 }
+
+script:pre-request {
+  console.log("--> [PRODUCTS] Fetching catalog page 1 (limit 10)...");
+}
+
+script:post-response {
+  const data = res.getBody();
+  console.log("<-- [PRODUCTS] Retrieved", data.products ? data.products.length : 0, "products of total", data.pagination?.total);
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify Content-Type is JSON", function() {
+    expect(res.getHeader('content-type')).to.include('application/json');
+  });
+
+  test("Verify products array and pagination contract", function() {
+    const data = res.getBody();
+    expect(data.products).to.be.an('array').that.is.not.empty;
+    expect(data.pagination).to.be.an('object');
+    expect(data.pagination.page).to.equal(1);
+    expect(data.pagination.limit).to.equal(10);
+    expect(data.pagination.total).to.be.at.least(1);
+    expect(data.pagination.totalPages).to.be.at.least(1);
+  });
+
+  test("Verify product object schema structure", function() {
+    const item = res.getBody().products[0];
+    expect(item).to.have.all.keys('id', 'name', 'title', 'price', 'description', 'category', 'stock', 'rating', 'brand');
+    expect(item.id).to.be.a('number');
+    expect(item.price).to.be.a('number');
+    expect(item.stock).to.be.a('number');
+  });
+}

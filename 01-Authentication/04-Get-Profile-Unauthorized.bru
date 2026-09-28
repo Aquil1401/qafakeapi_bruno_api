@@ -14,3 +14,23 @@ assert {
   res.status: eq 401
   res.body.error: contains Missing or invalid Authorization header
 }
+
+script:pre-request {
+  console.log("--> [AUTH NEGATIVE] Accessing protected endpoint without Authorization header...");
+}
+
+tests {
+  test("Verify HTTP status is 401 Unauthorized", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify error message instructs Bearer token usage", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.error).to.include('Missing or invalid Authorization header');
+  });
+}

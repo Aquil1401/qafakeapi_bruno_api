@@ -18,3 +18,29 @@ assert {
   res.status: eq 200
   res.body.message: eq Product deleted
 }
+
+script:pre-request {
+  const prodId = bru.getEnvVar("createdProductId");
+  console.log("--> [PRODUCTS CRUD] Deleting product ID:", prodId);
+}
+
+script:post-response {
+  console.log("<-- [PRODUCTS CRUD] Product deletion response:", res.getStatus());
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify deletion confirmation message", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.message).to.equal('Product deleted');
+    expect(data.product).to.be.an('object');
+  });
+}

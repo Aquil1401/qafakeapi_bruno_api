@@ -18,3 +18,35 @@ assert {
   res.body[0].items: isDefined
   res.body[0].totalAmount: isDefined
 }
+
+script:pre-request {
+  console.log("--> [ORDERS] Fetching nested relational orders and line items...");
+}
+
+script:post-response {
+  console.log("<-- [ORDERS] Retrieved", res.getBody().length, "order records.");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify orders response is a non-empty array", function() {
+    const orders = res.getBody();
+    expect(orders).to.be.an('array').that.is.not.empty;
+  });
+
+  test("Verify relational integrity of nested order items", function() {
+    const firstOrder = res.getBody()[0];
+    expect(firstOrder).to.have.property('id');
+    expect(firstOrder).to.have.property('userId');
+    expect(firstOrder.items).to.be.an('array').that.is.not.empty;
+    expect(firstOrder.items[0]).to.have.all.keys('productId', 'productName', 'quantity', 'price');
+    expect(firstOrder.totalAmount).to.be.a('number').above(0);
+  });
+}

@@ -31,10 +31,39 @@ assert {
   res.body.price: eq 1899
 }
 
+script:pre-request {
+  console.log("--> [PRODUCTS CRUD] Creating new product with Bearer Auth...");
+}
+
 script:post-response {
   const data = res.getBody();
   if (data && data.id) {
     bru.setEnvVar("createdProductId", data.id);
-    console.log("Saved dynamic createdProductId:", data.id);
+    console.log("<-- [PRODUCTS CRUD] Successfully created product with dynamic ID:", data.id);
   }
+}
+
+tests {
+  test("Verify HTTP status is 201 Created", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify created product payload matches request", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.id).to.be.a('number').above(0);
+    expect(data.name).to.equal('Wireless Ergonomic Keyboard');
+    expect(data.price).to.equal(1899);
+    expect(data.stock).to.equal(35);
+    expect(data.category).to.equal('electronics');
+  });
+
+  test("Verify dynamic createdProductId is saved in environment", function() {
+    const savedId = bru.getEnvVar("createdProductId");
+    expect(savedId).to.be.a('number');
+  });
 }

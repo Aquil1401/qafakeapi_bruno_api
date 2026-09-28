@@ -36,3 +36,28 @@ script:post-response {
     console.log("Captured JWT Bearer Token:", data.token);
   }
 }
+
+tests {
+  test("Status code is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Response time is under 1500ms SLA", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Content-Type header is JSON", function() {
+    expect(res.getHeader('content-type')).to.include('application/json');
+  });
+
+  test("Response body contains valid token and user structure", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.token).to.be.a('string').and.not.empty;
+    expect(data.user).to.be.an('object');
+    expect(data.user.id).to.equal(1);
+    expect(data.user.username).to.equal('aquil');
+    expect(data.user.role).to.equal('admin');
+  });
+}
+

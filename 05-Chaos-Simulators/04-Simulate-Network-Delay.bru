@@ -16,3 +16,28 @@ assert {
   res.body.actualDelayMs: gte 1400
   res.responseTime: gte 1400
 }
+
+script:pre-request {
+  console.log("--> [CHAOS LATENCY] Simulating server network latency delay of 1500ms...");
+}
+
+script:post-response {
+  console.log("<-- [CHAOS LATENCY] Actual server delay recorded:", res.getBody().actualDelayMs, "ms | Total elapsed:", res.getResponseTime(), "ms");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify server induced delay is at least 1400ms", function() {
+    expect(res.getResponseTime()).to.be.at.least(1400);
+  });
+
+  test("Verify delay response contract payload", function() {
+    const data = res.getBody();
+    expect(data.requestedDelayMs).to.equal(1500);
+    expect(data.actualDelayMs).to.be.at.least(1400);
+    expect(data.message).to.include('Delayed response simulated');
+  });
+}

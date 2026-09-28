@@ -17,3 +17,34 @@ assert {
   res.body[0].username: isDefined
   res.body[0].email: isDefined
 }
+
+script:pre-request {
+  console.log("--> [USERS] Fetching registered users list...");
+}
+
+script:post-response {
+  console.log("<-- [USERS] Retrieved", res.getBody().length, "user records.");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify users list is non-empty array", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('array').that.is.not.empty;
+  });
+
+  test("Verify user schema contains mandatory identity fields", function() {
+    const user = res.getBody()[0];
+    expect(user).to.have.all.keys('id', 'name', 'username', 'email', 'role', 'phone', 'city');
+    expect(user.id).to.be.a('number');
+    expect(user.username).to.be.a('string');
+    expect(user.email).to.include('@');
+  });
+}

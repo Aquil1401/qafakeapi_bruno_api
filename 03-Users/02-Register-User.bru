@@ -25,6 +25,12 @@ body:json {
 script:pre-request {
   const dynamicUser = "qa_user_" + Math.floor(Math.random() * 1000000);
   bru.setEnvVar("createdUsername", dynamicUser);
+  console.log("--> [USERS] Registering dynamic user:", dynamicUser);
+}
+
+script:post-response {
+  const data = res.getBody();
+  console.log("<-- [USERS] User successfully registered with ID:", data.id);
 }
 
 assert {
@@ -32,4 +38,24 @@ assert {
   res.body.id: isDefined
   res.body.username: isDefined
   res.body.role: eq tester
+}
+
+tests {
+  test("Verify HTTP status is 201 Created", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify registered user payload matches dynamic request data", function() {
+    const data = res.getBody();
+    const expectedUsername = bru.getEnvVar("createdUsername");
+    expect(data).to.be.an('object');
+    expect(data.id).to.be.a('number').above(0);
+    expect(data.username).to.equal(expectedUsername);
+    expect(data.role).to.equal('tester');
+    expect(data.email).to.include(expectedUsername);
+  });
 }

@@ -14,3 +14,24 @@ assert {
   res.status: eq 404
   res.body.error: eq Product not found
 }
+
+script:pre-request {
+  const prodId = bru.getEnvVar("createdProductId");
+  console.log("--> [PRODUCTS NEGATIVE] Verifying deleted product returns 404 for ID:", prodId);
+}
+
+tests {
+  test("Verify HTTP status is 404 Not Found", function() {
+    expect(res.getStatus()).to.equal(404);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify 404 error payload contract", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.error).to.equal('Product not found');
+  });
+}

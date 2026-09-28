@@ -18,3 +18,27 @@ assert {
   res.body.items.length: gte 1
   res.body.totalAmount: gt 0
 }
+
+script:pre-request {
+  console.log("--> [ORDERS] Fetching single order breakdown for ID: 101...");
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify order 101 payload structure and values", function() {
+    const order = res.getBody();
+    expect(order).to.be.an('object');
+    expect(order.id).to.equal(101);
+    expect(order.userId).to.equal(1);
+    expect(order.status).to.equal('delivered');
+    expect(order.items).to.be.an('array').with.lengthOf.at.least(1);
+    expect(order.totalAmount).to.be.a('number').above(0);
+  });
+}

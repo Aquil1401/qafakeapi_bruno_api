@@ -16,3 +16,24 @@ assert {
   res.body.simulated: eq true
   res.body.message: contains Rate limit exceeded
 }
+
+script:pre-request {
+  console.log("--> [CHAOS] Simulating 429 Rate Limiting...");
+}
+
+tests {
+  test("Verify HTTP status is 429 Too Many Requests", function() {
+    expect(res.getStatus()).to.equal(429);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify 429 rate limit response structure", function() {
+    const data = res.getBody();
+    expect(data.statusCode).to.equal(429);
+    expect(data.simulated).to.be.true;
+    expect(data.message).to.include('Rate limit exceeded');
+  });
+}

@@ -21,3 +21,37 @@ assert {
   res.body.role: eq admin
   res.body.email: eq aquil@qafakeapi.dev
 }
+
+script:pre-request {
+  const token = bru.getEnvVar("authToken");
+  console.log("--> [AUTH PROFILE] Validating session using Bearer Token:", token ? token.substring(0, 10) + "..." : "MISSING");
+}
+
+script:post-response {
+  console.log("<-- [AUTH PROFILE] Profile retrieved for user ID:", res.getBody().id);
+}
+
+tests {
+  test("Verify HTTP status is 200 OK", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+
+  test("Verify response time is within SLA (< 1500ms)", function() {
+    expect(res.getResponseTime()).to.be.below(1500);
+  });
+
+  test("Verify Content-Type is JSON", function() {
+    expect(res.getHeader('content-type')).to.include('application/json');
+  });
+
+  test("Verify authenticated user schema and identity", function() {
+    const data = res.getBody();
+    expect(data).to.be.an('object');
+    expect(data.id).to.equal(1);
+    expect(data.username).to.equal('aquil');
+    expect(data.email).to.equal('aquil@qafakeapi.dev');
+    expect(data.role).to.equal('admin');
+    expect(data.phone).to.be.a('string');
+    expect(data.city).to.be.a('string');
+  });
+}

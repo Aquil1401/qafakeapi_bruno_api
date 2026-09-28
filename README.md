@@ -1,11 +1,12 @@
 # QAFakeAPI Bruno API Automation Framework
 
 [![API Automation Tests](https://github.com/Aquil1401/qafakeapi_bruno_api/actions/workflows/api-automation-ci.yml/badge.svg)](https://github.com/Aquil1401/qafakeapi_bruno_api/actions/workflows/api-automation-ci.yml)
-![Tests Passed](https://img.shields.io/badge/Tests-25%2F25%20Passed-2ea44f?style=flat-square&logo=bruno&logoColor=white)
+![Tests Passed](https://img.shields.io/badge/Tests-81%2F81%20Passed-2ea44f?style=flat-square&logo=bruno&logoColor=white)
+![Requests](https://img.shields.io/badge/Requests-25%2F25%20Passed-blueviolet?style=flat-square)
 ![Assertions](https://img.shields.io/badge/Assertions-94%2F94%20Passed-blue?style=flat-square)
 ![API Client](https://img.shields.io/badge/API%20Client-Bruno%20v4.2.0-yellow?style=flat-square)
 ![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=flat-square&logo=node.js&logoColor=white)
-![Architecture](https://img.shields.io/badge/Architecture-Token%20Chaining%20%2B%20Idempotent-orange?style=flat-square)
+![Architecture](https://img.shields.io/badge/Architecture-Chai%20BDD%20%2B%20Token%20Chaining-orange?style=flat-square)
 [![Live Sandbox](https://img.shields.io/badge/Live%20Sandbox-qafakeapi.ziaratechqlabs.in-f97316?style=flat-square)](https://qafakeapi.ziaratechqlabs.in/playground)
 
 A scalable, maintainable, and enterprise-grade REST API automation framework built for **[QAFakeAPI](https://qafakeapi.ziaratechqlabs.in/playground)** (The Free Fake REST API Sandbox for QA & SDETs by Ziara TechQ Labs) using **Bruno** (`.bru` plain text format) and `@usebruno/cli`.
